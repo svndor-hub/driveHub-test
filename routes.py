@@ -74,6 +74,11 @@ def get_vehicles(session: Session = Depends(get_session)):
 def get_tasks(session: Session = Depends(get_session)):
     return session.query(Task).all()
 
+
+@router.get("/drivers", response_model=List[VehicleCreate])
+def get_drivers(session: Session = Depends(get_session)):
+    return session.query(Driver).all()
+
 # For driver app
 
 @router.post("/login/driver", status_code=status.HTTP_200_OK, response_model=DriverCreate)
