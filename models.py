@@ -60,7 +60,7 @@ class Task(Base):
     description = Column(String, nullable=False)
     status = Column(StatusType, nullable=False)
     driver_id = Column(UUID, ForeignKey('driver.id'))
-    driver = relationship('Driver', back_populates='task')
+    driver = relationship('Driver', back_populates='tasks')
 
 
 Base.metadata.create_all(engine)
