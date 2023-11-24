@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from db import get_session, engine, Base
 from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId
 from crud import driver_create, vehicle_create, task_create
-from models import Driver, Task, Admin
+from models import Driver, Task, Admin, Vehicle
 
 
 router = APIRouter()
