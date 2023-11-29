@@ -1,6 +1,7 @@
 import os
 from typing import List
 from dotenv import load_dotenv
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_login import LoginManager
@@ -9,7 +10,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 from sqlalchemy.orm import Session
 from db import get_session, engine, Base
-from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId, AdminCreate, VehicleRead
+from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId, AdminCreate, VehicleRead, TaskId
 from crud import driver_create, vehicle_create, task_create
 from models import Driver, Task, Admin, Vehicle
 
@@ -87,6 +88,32 @@ def create_task(task: TaskCreate, session: Session = Depends(get_session), user=
     return task_create(session=session, task=task)
 
 
+@router.put("/tasks/assign", status_code=status.HTTP_201_CREATED, response_model=TaskCreate)
+def assign_task(driver: UUID, task: UUID, session: Session = Depends(get_session), user=Depends(manager)):
+    drv = session.query(Driver).filter_by(id=driver).first()
+    tsk = session.query(Task).filter_by(id=task).first()
+
+    tsk.driver = drv
+    drv.tasks.append(tsk)
+
+    session.commit()
+
+    return tsk
+
+
+@router.put("/vehicles/assign", status_code=status.HTTP_201_CREATED, response_model=VehicleCreate)
+def assign_vehicle(driver: UUID, vehicle: UUID, session: Session = Depends(get_session), user=Depends(manager)):
+    drv = session.query(Driver).filter_by(id=driver).first()
+    vhcl = session.query(Vehicle).filter_by(id=vehicle).first()
+
+    vhcl.driver = drv
+    drv.vehicle = vhcl
+
+    session.commit()
+
+    return vhcl
+
+
 # For driver app
 
 @router.post("/login/driver", status_code=status.HTTP_200_OK, response_model=DriverCreate)
@@ -104,21 +131,31 @@ def login_driver(data: DriverLogin, session: Session = Depends(get_session)):
 
 
 
-
-
 @router.get("/tasks/all", status_code=status.HTTP_200_OK, response_model=List[TaskCreate])
-def get_all_tasks(driver_in: DriverId, session: Session = Depends(get_session)):
+def get_all_tasks(driver_in: UUID, session: Session = Depends(get_session)):
     return session.query(Task).join(Driver).filter(Task.driver_id == driver_in).all()
 
 
+@router.put("/tasks/update", status_code=status.HTTP_200_OK, response_model=TaskCreate)
+def update_task_status(driver_in: UUID, task: UUID, status: str, session: Session = Depends(get_session)):
+    if status != 'complete' and status != 'active':
+        raise HTTPException(status_code=400, detail='Status should be "active" or "complete"')
+
+    task = session.query(Task).join(Driver).filter(Task.driver_id == driver_in, Task.id == task).first()
+    task.status = status
+    session.commit()
+
+    return task
+
+
 @router.get("/tasks/complete", status_code=status.HTTP_200_OK, response_model=List[TaskCreate])
-def get_completed_tasks(driver_in: DriverId, session: Session = Depends(get_session)):
+def get_completed_tasks(driver_in: UUID, session: Session = Depends(get_session)):
     return session.query(Task).join(Driver).filter(Task.driver_id == driver_in).filter_by(status="complete")
 
 
 @router.get("/info", status_code=status.HTTP_200_OK, response_model=DriverCreate)
-def get_driver_info(driver_in: DriverId, session: Session = Depends(get_session)):
-    return session.query(Driver).filter_by(id=driver_in)
+def get_driver_info(driver_in: UUID, session: Session = Depends(get_session)):
+    return session.query(Driver).filter_by(id=driver_in).first()
 
 
 @router.get("/")
