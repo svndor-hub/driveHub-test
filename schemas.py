@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from uuid import UUID
 from typing import Optional, List
 
-# class UserCreate(BaseModel):
-#     id: UUID
-#     login: str
-#     password: str
+
+class AdminCreate(BaseModel):
+    login: str
+    password: str
 
 
 class UserRead(BaseModel):
