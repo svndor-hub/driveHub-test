@@ -27,14 +27,13 @@ def driver_create(session: Session, driver: DriverCreate):
     return db_user
 
 
-def vehicle_create(session: Session, vehicle: VehicleCreate, user: Optional[UserRead] = None):
+def vehicle_create(session: Session, vehicle: VehicleCreate):
     new_vehicle = Vehicle(
         license_plate=vehicle.license_plate,
         make=vehicle.make,
         model=vehicle.model,
         type=vehicle.type,
         year=vehicle.year,
-        driver=user.id
     )
 
     session.add(new_vehicle)
