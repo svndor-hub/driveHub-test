@@ -43,7 +43,6 @@ class VehicleCreate(BaseModel):
     model: str
     type: str
     year: int
-    driver: UUID
 
 
 class VehicleRead(BaseModel):
