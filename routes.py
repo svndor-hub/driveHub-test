@@ -9,7 +9,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 from sqlalchemy.orm import Session
 from db import get_session, engine, Base
-from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId, AdminCreate
+from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId, AdminCreate, VehicleRead
 from crud import driver_create, vehicle_create, task_create
 from models import Driver, Task, Admin, Vehicle
 
@@ -62,7 +62,7 @@ def create_user(driver: DriverCreate, session: Session = Depends(get_session), u
     return driver_create(session=session, driver=driver)
 
 
-@router.get("/vehicles", response_model=List[VehicleCreate])
+@router.get("/vehicles", response_model=List[VehicleRead])
 def get_vehicles(session: Session = Depends(get_session)):
     return session.query(Vehicle).all()
 
