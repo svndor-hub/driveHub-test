@@ -37,7 +37,7 @@ def vehicle_create(session: Session, vehicle: VehicleCreate):
         model=vehicle.model,
         type=vehicle.type,
         year=vehicle.year,
-        driver_id=vehicle.driver
+        driver=vehicle.driver
     )
 
     session.add(new_vehicle)
