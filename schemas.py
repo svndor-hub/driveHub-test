@@ -52,7 +52,7 @@ class VehicleRead(BaseModel):
     model: str
     type: str
     year: int
-    driver: DriverCreate
+    driver: Optional[DriverCreate] = None
 
 
 class DriverLogin(BaseModel):
