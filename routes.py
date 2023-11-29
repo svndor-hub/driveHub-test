@@ -31,7 +31,7 @@ def query_user(login: str):
 
 @router.post("/admin/create")
 def create_admin(data: AdminCreate, session: Session = Depends(get_session)):
-    new_admin = Admin(data.login, data.password)
+    new_admin = Admin(login=data.login, password=data.password)
     session.add(new_admin)
     session.commit()
     session.refresh(new_admin)
