@@ -21,7 +21,7 @@ class Vehicle(Base):
     model = Column(String, nullable=False)
     type = Column(String, nullable=False)
     year = Column(Integer, nullable=False)
-    driver_id = Column(UUID, ForeignKey('driver.id'))
+    driver_id = Column(ForeignKey('driver.id'))
     driver = relationship('Driver', back_populates='vehicle')
 
 
@@ -37,7 +37,7 @@ class Driver(Base):
     phone_number = Column(String, nullable=False)
     license_code = Column(String, nullable=False)
     email = Column(String)
-    vehicle = relationship('Vehicle', back_populates='driver')
+    vehicle = relationship('Vehicle', uselist=False, back_populates='driver')
     tasks = relationship('Task', back_populates='driver')
 
 
