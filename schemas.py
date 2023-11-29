@@ -22,7 +22,7 @@ class VehicleCreate(BaseModel):
     make: str
     model: str
     type: str
-    year: str
+    year: int
     driver: UUID
 
 
