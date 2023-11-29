@@ -37,6 +37,7 @@ class Driver(Base):
     phone_number = Column(String, nullable=False)
     license_code = Column(String, nullable=False)
     email = Column(String)
+    vehicle = relationship('Vehicle', back_populates='driver')
     tasks = relationship('Task', back_populates='driver')
 
 
