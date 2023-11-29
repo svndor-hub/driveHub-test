@@ -21,7 +21,8 @@ class Vehicle(Base):
     model = Column(String, nullable=False)
     type = Column(String, nullable=False)
     year = Column(Integer, nullable=False)
-    driver = Column(UUID, ForeignKey('driver.id'))
+    driver_id = Column(UUID, ForeignKey('driver.id'))
+    driver = relationship('driver', back_populates='vehicles')
 
 
 class Driver(Base):
