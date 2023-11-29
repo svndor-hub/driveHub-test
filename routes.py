@@ -9,7 +9,7 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 from sqlalchemy.orm import Session
 from db import get_session, engine, Base
-from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId
+from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId, AdminCreate
 from crud import driver_create, vehicle_create, task_create
 from models import Driver, Task, Admin, Vehicle
 
@@ -28,6 +28,13 @@ def query_user(login: str):
 
 
 # For admin/web
+
+@router.post("/admin/create")
+def create_admin(data: AdminCreate, session: Session = Depends(get_session)):
+    new_admin = Admin(data.login, data.password)
+    session.add(new_admin)
+    session.commit()
+    session.refresh(new_admin)
 
 
 @router.post("/login")
@@ -55,19 +62,19 @@ def create_user(driver: DriverCreate, session: Session = Depends(get_session), u
     return driver_create(session=session, driver=driver)
 
 
-@router.post("/vehicles/create", status_code=status.HTTP_201_CREATED, response_model=VehicleCreate)
-def create_vehicle(vehicle: VehicleCreate, session: Session = Depends(get_session), user=Depends(manager)):
-    return vehicle_create(session=session, vehicle=vehicle)
-
-
-@router.post("/tasks/create", status_code=status.HTTP_201_CREATED, response_model=TaskCreate)
-def create_task(task: TaskCreate, session: Session = Depends(get_session), user=Depends(manager)):
-    return task_create(session=session, task=task)
-
-
 @router.get("/vehicles", response_model=List[VehicleCreate])
 def get_vehicles(session: Session = Depends(get_session)):
     return session.query(Vehicle).all()
+
+
+@router.get("/drivers", response_model=List[VehicleCreate])
+def get_drivers(session: Session = Depends(get_session)):
+    return session.query(Driver).all()
+
+
+@router.post("/vehicles/create", status_code=status.HTTP_201_CREATED, response_model=VehicleCreate)
+def create_vehicle(vehicle: VehicleCreate, session: Session = Depends(get_session), user=Depends(manager)):
+    return vehicle_create(session=session, vehicle=vehicle)
 
 
 @router.get("/tasks", response_model=List[TaskCreate])
@@ -75,9 +82,10 @@ def get_tasks(session: Session = Depends(get_session)):
     return session.query(Task).all()
 
 
-@router.get("/drivers", response_model=List[VehicleCreate])
-def get_drivers(session: Session = Depends(get_session)):
-    return session.query(Driver).all()
+@router.post("/tasks/create", status_code=status.HTTP_201_CREATED, response_model=TaskCreate)
+def create_task(task: TaskCreate, session: Session = Depends(get_session), user=Depends(manager)):
+    return task_create(session=session, task=task)
+
 
 # For driver app
 
@@ -93,6 +101,9 @@ def login_driver(data: DriverLogin, session: Session = Depends(get_session)):
         raise InvalidCredentialsException
 
     return user
+
+
+
 
 
 @router.get("/tasks/all", status_code=status.HTTP_200_OK, response_model=List[TaskCreate])
