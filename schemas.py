@@ -16,16 +16,6 @@ class UserRead(BaseModel):
         orm_mode = True
 
 
-class VehicleCreate(BaseModel):
-    id: UUID
-    license_plate: str
-    make: str
-    model: str
-    type: str
-    year: int
-    driver: UUID
-
-
 class TaskCreate(BaseModel):
     id: UUID
     description: str
@@ -44,6 +34,26 @@ class DriverCreate(BaseModel):
     license_code: str
     email: Optional[str] = None
     tasks: List[TaskCreate]
+
+
+class VehicleCreate(BaseModel):
+    id: UUID
+    license_plate: str
+    make: str
+    model: str
+    type: str
+    year: int
+    driver: UUID
+
+
+class VehicleRead(BaseModel):
+    id: UUID
+    license_plate: str
+    make: str
+    model: str
+    type: str
+    year: int
+    driver: DriverCreate
 
 
 class DriverLogin(BaseModel):
