@@ -10,6 +10,7 @@ def driver_create(session: Session, driver: DriverCreate):
     hashed_pw = driver.password
 
     db_user = Driver(
+        id=driver.id,
         login=driver.login,
         password=hashed_pw,
         name=driver.name,
@@ -18,7 +19,8 @@ def driver_create(session: Session, driver: DriverCreate):
         address=driver.address,
         phone_number=driver.phone_number,
         license_code=driver.license_code,
-        email=driver.email
+        email=driver.email,
+        tasks=driver.tasks
     )
     session.add(db_user)
     session.commit()
@@ -29,11 +31,13 @@ def driver_create(session: Session, driver: DriverCreate):
 
 def vehicle_create(session: Session, vehicle: VehicleCreate):
     new_vehicle = Vehicle(
+        id=vehicle.id,
         license_plate=vehicle.license_plate,
         make=vehicle.make,
         model=vehicle.model,
         type=vehicle.type,
         year=vehicle.year,
+        driver_id=vehicle.driver
     )
 
     session.add(new_vehicle)
