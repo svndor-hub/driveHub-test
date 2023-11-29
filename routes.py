@@ -67,7 +67,7 @@ def get_vehicles(session: Session = Depends(get_session)):
     return session.query(Vehicle).all()
 
 
-@router.get("/drivers", response_model=List[VehicleCreate])
+@router.get("/drivers", response_model=List[DriverCreate])
 def get_drivers(session: Session = Depends(get_session)):
     return session.query(Driver).all()
 
