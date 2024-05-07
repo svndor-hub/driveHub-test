@@ -19,8 +19,7 @@ def driver_create(session: Session, driver: DriverCreate):
         address=driver.address,
         phone_number=driver.phone_number,
         license_code=driver.license_code,
-        email=driver.email,
-        tasks=driver.tasks
+        email=driver.email
     )
     session.add(db_user)
     session.commit()
@@ -36,7 +35,7 @@ def vehicle_create(session: Session, vehicle: VehicleCreate):
         make=vehicle.make,
         model=vehicle.model,
         type=vehicle.type,
-        year=vehicle.year,
+        year=vehicle.year
     )
 
     session.add(new_vehicle)
@@ -47,7 +46,7 @@ def vehicle_create(session: Session, vehicle: VehicleCreate):
 
 
 def task_create(session: Session, task: TaskCreate):
-    new_task = Task(description=task.description, status=task.status)
+    new_task = Task(description=task.description, status=task.status, route=task.route)
 
     session.add(new_task)
     session.commit()

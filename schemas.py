@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from uuid import UUID
 from typing import Optional, List
+from datetime import datetime, date
 
 
 class AdminCreate(BaseModel):
@@ -20,6 +21,7 @@ class TaskCreate(BaseModel):
     id: UUID
     description: str
     status: str
+    route: str
 
 
 class DriverCreate(BaseModel):
@@ -33,7 +35,6 @@ class DriverCreate(BaseModel):
     phone_number: str
     license_code: str
     email: Optional[str] = None
-    tasks: List[TaskCreate]
 
 
 class VehicleCreate(BaseModel):
@@ -60,5 +61,37 @@ class DriverLogin(BaseModel):
     password: str
 
 
-class DriverId(BaseModel):
-    id: UUID
+class Fuel(BaseModel):
+    vehicle_plate: str
+    datetime: datetime
+    fuelamount: float
+    cost: float
+    gas_station: str
+    fueling_person_name: str
+
+
+class FuelingPersonCreate(BaseModel):
+    name: str
+
+
+class Fueling(BaseModel):
+    vehicle: VehicleCreate
+    datetime: datetime
+    fuelamount: float
+    cost: float
+    gas_station: str
+    fueling_person: FuelingPersonCreate
+
+
+class MaintenanceCreate(BaseModel):
+    vehicle_plate: str
+    service_type: str
+    date: date
+    cost: float
+
+
+class MaintenanceReturn(BaseModel):
+    vehicle: VehicleCreate
+    service_type: str
+    date: date
+    cost: float

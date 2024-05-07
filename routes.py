@@ -10,9 +10,9 @@ from fastapi_login.exceptions import InvalidCredentialsException
 
 from sqlalchemy.orm import Session
 from db import get_session, engine, Base
-from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, DriverId, AdminCreate, VehicleRead, TaskId
+from schemas import VehicleCreate, TaskCreate, DriverCreate, DriverLogin, AdminCreate, VehicleRead, Fuel, Fueling, MaintenanceCreate, MaintenanceReturn
 from crud import driver_create, vehicle_create, task_create
-from models import Driver, Task, Admin, Vehicle
+from models import Driver, Task, Admin, Vehicle, VehicleFueling, FuelingPerson, VehicleMaintenance
 
 
 router = APIRouter()
@@ -156,6 +156,50 @@ def get_completed_tasks(driver_in: UUID, session: Session = Depends(get_session)
 @router.get("/info", status_code=status.HTTP_200_OK, response_model=DriverCreate)
 def get_driver_info(driver_in: UUID, session: Session = Depends(get_session)):
     return session.query(Driver).filter_by(id=driver_in).first()
+
+
+@router.post("/fuel", status_code=status.HTTP_200_OK, response_model=Fueling)
+def fuel_vehicle(data: Fuel, session: Session = Depends(get_session)):
+    vehicle = session.query(Vehicle).filter_by(license_plate=data.vehicle_plate).first()
+    fueling_person = session.query(FuelingPerson).filter_by(name=data.fueling_person_name).first()
+    fueling = VehicleFueling(
+        vehicle=vehicle,
+        datetime=data.datetime,
+        fuelamount=data.fuelamount,
+        cost=data.cost,
+        gas_station=data.gas_station,
+        fueling_person=fueling_person
+    )
+
+    session.add(fueling)
+    session.commit()
+    session.refresh(fueling)
+
+    fueling_person.fuelings.append(fueling)
+    vehicle.fueling = fueling
+    session.commit()
+
+    return fueling
+
+
+@router.post("/maintenance", status_code=status.HTTP_200_OK, response_model=MaintenanceReturn)
+def maintenance(data: MaintenanceCreate, session: Session = Depends(get_session)):
+    vehicle = session.query(Vehicle).filter_by(license_plate=data.vehicle_plate).first()
+    report = VehicleMaintenance(
+        vehicle=vehicle,
+        service_type=data.service_type,
+        date=data.date,
+        cost=data.cost
+    )
+
+    session.add(report)
+    session.commit()
+    session.refresh(report)
+
+    vehicle.maintenance.append(report)
+    session.commit()
+
+    return report
 
 
 @router.get("/")
